@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// --- Enums ---
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// --- Core Models ---
+
+model User {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  email         String    @unique
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          UserRole  @default(USER)
+  // CORRECTED: Relation field for all tickets booked by this user
+  ticketsBooked Ticket[] 
+}
+
+model Ticket {
+  id            String       @id @default(uuid())
+  // 1. Array of simple seat IDs
+  seatIds       String[]
+  // 2. Total price for the ticket
+  totalPrice    Decimal
+  // 3. Nested Seats via a relation
+  seats         TicketSeat[]
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // CORRECTION 1: Define the foreign key field for the User relationship
+  userId        String 
+  // CORRECTION 2: Define the relation, pointing the foreign key field (userId) 
+  // to the correct reference field (id) on the User model.
+  user          User         @relation(fields: [userId], references: [id]) 
+}
+
+model TicketSeat {
+  // CORRECTION 3: Define a unique, primary ID for the relation table itself.
+  // The 'id' field you used should likely be the actual ID/reference of the seat.
+  id             String       // The actual unique ID of the seat (e.g., from a Seat model)
+  row            String
+  seatNumber     String
+  type           String
+  price          Decimal
+  
+  // The actual primary key for this junction entry
+  ticketSeatId   String       @id @default(uuid()) 
+  
+  // CORRECTION 4: Define the foreign key for the Ticket relation
+  ticketId       String
+  ticket         Ticket       @relation(fields: [ticketId], references: [id])
+}
+
+// --- Movie/Showtime Models ---
+
+model Movie {
+  id            Int         @id @default(autoincrement())
+  title         String
+  rating        Float
+  genre         String[] 
+  language      String
+  duration      String
+  poster        String
+  backdrop      String
+  releaseDate   DateTime    @db.Date
+  votes         String
+  synopsis      String
+  cast          String[]
+  director      String
+
+  showtimes     Showtime[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Showtime {
+  id            Int         @id @default(autoincrement())
+  time          String
+  theater       String
+  price         Decimal     @db.Money
+  filling       String
+  
+  movieId       Int
+  movie         Movie       @relation(fields: [movieId], references: [id])
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([movieId, time, theater])
+}
