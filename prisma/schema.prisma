@@ -25,88 +25,94 @@ enum UserRole {
 // --- Core Models ---
 
 model User {
-  id            String    @id @default(uuid())
-  name          String    @unique
-  email         String    @unique
+  id            String   @id @default(uuid())
+  name          String   @unique
+  email         String   @unique
   imageUrl      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  role          UserRole  @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role          UserRole @default(USER)
   // CORRECTED: Relation field for all tickets booked by this user
-  ticketsBooked Ticket[] 
+  ticketsBooked Ticket[]
 }
 
 model Ticket {
-  id            String       @id @default(uuid())
-  // 1. Array of simple seat IDs
-  seatIds       String[]
-  // 2. Total price for the ticket
-  totalPrice    Decimal
-  // 3. Nested Seats via a relation
-  seats         TicketSeat[]
-  
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id         String       @id @default(uuid())
+  seatIds    String[]
+  totalPrice Decimal
+  seats      TicketSeat[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // CORRECTION 1: Define the foreign key field for the User relationship
-  userId        String 
-  // CORRECTION 2: Define the relation, pointing the foreign key field (userId) 
-  // to the correct reference field (id) on the User model.
-  user          User         @relation(fields: [userId], references: [id]) 
+  // ✅ MAJOR FIX: Link to the specific showtime
+  showtimeId Int
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
 }
 
 model TicketSeat {
-  // CORRECTION 3: Define a unique, primary ID for the relation table itself.
-  // The 'id' field you used should likely be the actual ID/reference of the seat.
-  id             String       // The actual unique ID of the seat (e.g., from a Seat model)
-  row            String
-  seatNumber     String
-  type           String
-  price          Decimal
-  
-  // The actual primary key for this junction entry
-  ticketSeatId   String       @id @default(uuid()) 
-  
-  // CORRECTION 4: Define the foreign key for the Ticket relation
-  ticketId       String
-  ticket         Ticket       @relation(fields: [ticketId], references: [id])
+  seatId   String // The unique ID of the seat (e.g., from a Seat model)
+  row      String
+  seat     String
+  type     String
+  price    Decimal
+  // ✅ FIX: Renamed primary key to 'id'
+  id       String  @id @default(uuid())
+  ticketId String
+  ticket   Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  // Combined key for uniqueness, if necessary, though 'id' is sufficient
+  // @@unique([seatId, ticketId]) 
 }
 
 // --- Movie/Showtime Models ---
 
 model Movie {
-  id            Int         @id @default(autoincrement())
-  title         String
-  rating        Float
-  genre         String[] 
-  language      String
-  duration      String
-  poster        String
-  backdrop      String
-  releaseDate   DateTime    @db.Date
-  votes         String
-  synopsis      String
-  cast          String[]
-  director      String
-
-  showtimes     Showtime[]
-
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          Int        @id @default(autoincrement())
+  title       String
+  rating      Float
+  genre       String[]
+  language    String
+  duration    String
+  poster      String
+  backdrop    String
+  releaseDate DateTime   @db.Date
+  votes       String
+  synopsis    String
+  cast        String[]
+  director    String
+  showtimes   Showtime[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Showtime {
-  id            Int         @id @default(autoincrement())
-  time          String
-  theater       String
-  price         Decimal     @db.Money
-  filling       String
-  
-  movieId       Int
-  movie         Movie       @relation(fields: [movieId], references: [id])
+  id         Int         @id @default(autoincrement())
+  time       String
+  theater    String
+  seatPrices SeatPrice[]
+  filling    String
+  movieId    Int
+  movie      Movie       @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  // ✅ ADDED: Reverse relation for all tickets for this showtime
+  tickets Ticket[]
 
   @@unique([movieId, time, theater])
+}
+
+// --- Configuration Model for Seat Pricing ---
+model SeatPrice {
+  id          Int        @id @default(autoincrement())
+  // The type of seat (e.g., "Standard", "Premium", "VIP")
+  seatType    String
+  price       Decimal    @db.Money
+  showtimeId  Int
+  showtime    Showtime   @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+
+  // Constraint: A showtime can only have one price defined per seat type
+  @@unique([showtimeId, seatType])
 }

@@ -16,9 +16,9 @@ export default function RootLayout({ children }) {
         className={`${inter.className}`}
       >
 
-<Header/>
+<Header isAdminPage={false}/>
 
-        <main className="min-h-screen">
+        <main className="min-h-screen my-20">
         {children}
         </main>
 

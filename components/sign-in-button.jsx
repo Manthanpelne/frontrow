@@ -3,10 +3,11 @@ import { auth, signIn, signOut } from "@/auth";
 export default async function SignIn() {
   const session = await auth();
   const user = session?.user;
-  console.log(user)
+  //console.log(user)
 
   return user ? (
     <>
+    <div className="flex items-center gap-2">
     <h1>welcome, {user.name}</h1>
       <form
         action={async () => {
@@ -18,9 +19,11 @@ export default async function SignIn() {
           Logout
         </button>
       </form>
+    </div>
     </>
   ) : (
     <>
+    <div className="flex items-center gap-2">
     <h1>you are not logged in</h1>
       <form
         action={async () => {
@@ -32,6 +35,7 @@ export default async function SignIn() {
           Signin with Google
         </button>
       </form>
+    </div>
     </>
   );
 }
