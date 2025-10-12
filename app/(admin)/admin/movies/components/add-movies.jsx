@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X, Upload, Loader2 } from "lucide-react";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import useFetch from "@/hooks/use-fetch";
 import { addMovies } from "@/actions/movies";
+import { toast } from "sonner";
 
 // Define seat types array
 const seatTypes = ["VIP", "Standard", "Premium"];
@@ -92,8 +93,8 @@ const MovieSchema = z
       .map((s) => s.trim())
       .filter((s) => s.length > 0),
     // Remove string fields used for input
-    genreString: undefined,
-    castString: undefined,
+    genreString: "",
+    castString: "",
   }));
 
 // --- Helper Component for File Input (Handles Base64 Conversion) ---
@@ -450,7 +451,14 @@ const AddMoviesForm = () => {
 
 
 
-const {data: addMoviesResult, loading:addmoviesLoading, fn:addCarFn} = useFetch(addMovies)
+const {data: addMoviesResult, loading:addmoviesLoading, fn:addMoviefn} = useFetch(addMovies)
+
+
+useEffect(()=>{
+   if(addMoviesResult?.success){
+     toast.success(`${addMoviesResult.message}`)
+   }
+},[addMoviesResult,addmoviesLoading])
 
 
 //api handler
@@ -464,44 +472,14 @@ const {data: addMoviesResult, loading:addmoviesLoading, fn:addCarFn} = useFetch(
       });
       return;
     }
-
-    // 1. Prepare the final payload for the backend API
-    const moviesData = {
-      ...data,
-      poster: "uploaded-poster-url",
-      backdrop: "uploaded-backdrop-url",
-    };
-
-    const images = [posterBase64, backdropBase64]; // Array of base64 strings
-
-    // 2. Mock API call (Replace with your actual 'addMovies' call)
-    console.log("--- Submitting Data Payload ---");
-    //console.log("moviesData:", moviesData);
-    console.log(`images: [${images}]`);
-
-    // Example call structure:
-    // const result = await addMovies({ moviesData, images });
-
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
-
-    try {
-      // Mock success case
-      setSubmitMessage({
-        type: "success",
-        text: "Movie added successfully! (Mock Submission)",
-      });
-      reset(); // Clear form on success
-      setPosterBase64(null);
-      setBackdropBase64(null);
-    } catch (error) {
-      // Mock error case
-      setSubmitMessage({
-        type: "error",
-        text: `Failed to add movie: ${error.message}`,
-      });
-    }
-
     console.log("data",data)
+    const moviesData = {
+      ...data
+    }
+    await addMoviefn({
+      moviesData,
+      images :  [posterBase64, backdropBase64]
+    })
   };
 
 

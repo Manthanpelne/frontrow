@@ -1,9 +1,11 @@
-"use server"
+"use server";
 
 import { auth } from "@/auth";
+import { db } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { v4 as uuidv4 } from "uuid";
 
 //admin adding movies to db api
 export const addMovies = async ({ moviesData, images }) => {
@@ -66,34 +68,42 @@ export const addMovies = async ({ moviesData, images }) => {
       throw new Error("No valid images were uploaded");
     }
 
-    const movie = await db.movie.create({
+     await db.movie.create({
       data: {
-        id: moviesId,
         title: moviesData.title,
         rating: moviesData.rating,
         genre: moviesData.genre,
         language: moviesData.language,
         duration: moviesData.duration,
-        poster: moviesData.poster,
-        backdrop: moviesData.backdrop,
-        releaseDate: moviesData.releaseDate,
+        poster: imageUrls[0],
+        backdrop: imageUrls[1] || null,
+        releaseDate: new Date(moviesData.releaseDate), 
         votes: moviesData.votes,
         synopsis: moviesData.synopsis,
         cast: moviesData.cast,
         director: moviesData.director,
-         create: moviesData.showtimes.map(st => ({
-        time: st.time,
-        theater: st.theater,
-        price: parseFloat(st.price), 
-        filling: st.filling,
-      })),
-     },
+        showtimes: {
+          create: moviesData.showtimes.map((st) => ({
+            time: st.time,
+            theater: st.theater,
+            filling: st.filling,
+            seatPrices: {
+              create: st.seatPrices.map((sp) => ({
+                seatType: sp.seatType,
+                price: parseFloat(sp.price), // Ensure price is a number
+              })),
+            },
+          })),
+        },
+      },
     });
     revalidatePath("/admin/movies");
     return {
-        success : true
-    }
+      success: true,
+      message: `${moviesData.title} movie got added successfully!`,
+    };
   } catch (error) {
-    throw new Error("Error adding car:",error.message)
+    console.log("Failed to add movie",error)
+    throw new Error("Failed to add movie");
   }
 };
