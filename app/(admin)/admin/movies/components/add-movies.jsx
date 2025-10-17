@@ -15,6 +15,7 @@ import {
 import useFetch from "@/hooks/use-fetch";
 import { addMovies } from "@/actions/movies";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // Define seat types array
 const seatTypes = ["VIP", "Standard", "Premium"];
@@ -45,8 +46,7 @@ const ShowtimeSchema = z.object({
 });
 
 // Schema for the entire Movie payload
-const MovieSchema = z
-  .object({
+const MovieSchema = z.object({
     title: z
       .string()
       .min(3, { message: "Title must be at least 3 characters." }),
@@ -389,6 +389,8 @@ const AddMoviesForm = () => {
   const [backdropBase64, setBackdropBase64] = useState(null);
   const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
 
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -457,6 +459,7 @@ const {data: addMoviesResult, loading:addmoviesLoading, fn:addMoviefn} = useFetc
 useEffect(()=>{
    if(addMoviesResult?.success){
      toast.success(`${addMoviesResult.message}`)
+     router.push("/admin/movies")
    }
 },[addMoviesResult,addmoviesLoading])
 
@@ -664,7 +667,7 @@ useEffect(()=>{
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition duration-150"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition duration-150"
             >
               {isSubmitting && addmoviesLoading ?
                <>

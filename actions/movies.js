@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { serializeMovies } from "@/lib/helper";
 import { db } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
@@ -107,3 +108,108 @@ export const addMovies = async ({ moviesData, images }) => {
     throw new Error("Failed to add movie");
   }
 };
+
+
+export const getMovies = async(search = "")=>{
+ try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized!");
+    }
+
+    const loggedInUser = await db.user.findUnique({
+      where: {
+        email: session?.user?.email,
+      },
+    });
+    if (!loggedInUser) throw new Error("User does not exist");
+
+    // -----------------------------------------------------------------
+    // ✅ CORE FIX: Implement Prisma query with search and relations
+    // -----------------------------------------------------------------
+    const movies = await db.movie.findMany({
+      where: {
+        // Use a case-insensitive search on the 'title' field
+        title: {
+          contains: search,
+          mode: 'insensitive', // Important for case-insensitive search in PostgreSQL
+        },
+      },
+      // Include all necessary relations for a full movie detail view
+      include: {
+        showtimes: {
+          include: {
+            seatPrices: true, // Include seat prices nested under each showtime
+          },
+          orderBy: {
+            time: 'asc', // Optional: Order showtimes logically
+          },
+        },
+      },
+      // Optional: Add sorting for the movies themselves (e.g., by release date)
+      orderBy: {
+        releaseDate: 'desc',
+      }
+    });
+    const serializedMovies = serializeMovies(movies)
+    return {
+      success: true,
+      movies: serializedMovies,
+    };
+
+  } catch (error) {
+    console.error("Error fetching movies:", error.message);
+    // Return a structured error response for the client
+    return {
+      success: false,
+      error: "Failed to fetch movies",
+    };
+  }
+}
+
+
+//delete api
+export const deleteMovies = async(movieId)=>{
+ try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized: User not logged in.");
+    }
+    //Re-check admin status if necessary, similar to addMovies
+    const loggedInUser = await db.user.findUnique({
+      where: { email: session.user.email },
+    });
+    if (!loggedInUser) throw new Error("User does not exist.");
+
+    await db.$transaction(async(prisma)=>{
+      // 1. Get all showtimes and their IDs for the movie being deleted
+      const showtimes = await prisma.showtime.findMany({
+        where: { movieId: movieId },
+        select: { id: true },
+      });
+      const showtimeIds = showtimes.map(st => st.id);
+
+      // 2. Find and deleting all tickets for these showtimes. 
+      await prisma.ticket.deleteMany({
+        where: {
+          showtimeId: { in: showtimeIds },
+        },
+      });
+
+      //finally delete movie
+      await prisma.movie.delete({
+        where : {id: movieId}
+      })
+    })
+
+    //update the list immediately on frontend
+    revalidatePath("/admin/movies")
+    return {
+      success: true,
+      message: "Movie and all related data deleted successfully!",
+    };
+  } catch (error) {
+    console.log("Error deleting movie details",error)
+    return { success: false, message: "Failed to delete movie" };
+  }
+}

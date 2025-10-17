@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { Toaster } from "sonner";
 
-const inter = Inter({subsets: ["latin"]})
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Create Next App",
@@ -13,16 +13,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className}`}
-      >
-
-<Header isAdminPage={false}/>
-        
-        <main className="min-h-screen my-20">
-        {children}
-        </main>
-        <Toaster richColors />
+      <body className={`${inter.className}`}>
+        <Header isAdminPage={false} />
+        <main className="min-h-screen my-20">{children}</main>
+        <Toaster richColors position="top-right" />
         <footer className="bg-black text-white">footer</footer>
       </body>
     </html>
