@@ -25,6 +25,7 @@ export async function getMoviesFilter() {
   }
 }
 
+
 export const getMovies = async (
   search = "",
   languageFilter = null,
@@ -32,6 +33,18 @@ export const getMovies = async (
   limit = 1
 ) => {
   try {
+        const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized!");
+    }
+
+    const loggedInUser = await db.user.findUnique({
+      where: {
+        email: session?.user?.email,
+      },
+    });
+    if (!loggedInUser) throw new Error("User does not exist");
+    
     //pagination
     const take = parseInt(limit);
     const skip = (parseInt(page) - 1) * take;

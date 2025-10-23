@@ -37,18 +37,28 @@ model User {
 }
 
 model Ticket {
-  id         String       @id @default(uuid())
-  seatIds    String[]
-  totalPrice Decimal
-  seats      TicketSeat[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  userId     String
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String       @id @default(uuid())
+  totalPrice  Decimal
+  seats       TicketSeat[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showtimeId  Int
+  showtime    Showtime     @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  bookedSeats BookedSeat[]
+}
 
-  // ✅ MAJOR FIX: Link to the specific showtime
+model BookedSeat {
+  id         String   @id @default(uuid())
+  seatId     String // e.g., "A5", "VIP-C1"
   showtimeId Int
-  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([showtimeId, seatId])
 }
 
 model TicketSeat {
@@ -69,7 +79,7 @@ model TicketSeat {
 // --- Movie/Showtime Models ---
 
 model Movie {
-  id          Int        @id @default(autoincrement())
+  id          String     @id @default(uuid())
   title       String
   rating      Float
   genre       String[]
@@ -93,25 +103,26 @@ model Showtime {
   theater    String
   seatPrices SeatPrice[]
   filling    String
-  movieId    Int
+  movieId    String
   movie      Movie       @relation(fields: [movieId], references: [id], onDelete: Cascade)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
   // ✅ ADDED: Reverse relation for all tickets for this showtime
-  tickets Ticket[]
+  tickets    Ticket[]
+  BookedSeat BookedSeat[]
 
   @@unique([movieId, time, theater])
 }
 
 // --- Configuration Model for Seat Pricing ---
 model SeatPrice {
-  id          Int        @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   // The type of seat (e.g., "Standard", "Premium", "VIP")
-  seatType    String
-  price       Decimal    @db.Money
-  showtimeId  Int
-  showtime    Showtime   @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seatType   String
+  price      Decimal  @db.Money
+  showtimeId Int
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
 
   // Constraint: A showtime can only have one price defined per seat type
   @@unique([showtimeId, seatType])

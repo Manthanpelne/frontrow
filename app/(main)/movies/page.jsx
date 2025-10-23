@@ -9,11 +9,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
- const metadata = {
-  title: 'Movies | FrontRow',
-  description: 'Browse movies and book movie tickets'
-}
-
 
 let limit = 1
 
@@ -99,6 +94,7 @@ const fetchMovies = useCallback(async()=>{
     if(result.success){
       console.log("movies",result.movies)
       setMovies(result.movies)
+      //console.log("movies",result.movies)
       setTotalPages(result.totalPages)
     }else{
       toast.error("Failed to fetch movies")
@@ -181,7 +177,7 @@ const handlePageChange=(newPage)=>{
                         {movies.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                 {movies.map(movie => (
-                                  <Link href={`/movies/${movie.title}`} key={movie.id}>
+                                  <Link href={`/movies/${movie.id}`} key={movie.id}>
                                     <div className="bg-white shadow-lg rounded-xl p-4 transition-transform hover:scale-[1.02]">
                                         <h3 className="text-xl font-semibold truncate">{movie.title}</h3>
                                         <p className="text-sm text-gray-600">{movie.language} | {movie.duration || 'N/A'}</p>

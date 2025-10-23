@@ -71,6 +71,7 @@ export const addMovies = async ({ moviesData, images }) => {
 
      await db.movie.create({
       data: {
+        id:moviesId,
         title: moviesData.title,
         rating: moviesData.rating,
         genre: moviesData.genre,
@@ -104,8 +105,8 @@ export const addMovies = async ({ moviesData, images }) => {
       message: `${moviesData.title} movie got added successfully!`,
     };
   } catch (error) {
-    console.log("Failed to add movie",error)
-    throw new Error("Failed to add movie");
+   console.log("Failed to add movie",error)
+    return { success: false, message: "Failed to add a movie" };
   }
 };
 
@@ -124,9 +125,7 @@ export const getMovies = async(search = "")=>{
     });
     if (!loggedInUser) throw new Error("User does not exist");
 
-    // -----------------------------------------------------------------
-    // ✅ CORE FIX: Implement Prisma query with search and relations
-    // -----------------------------------------------------------------
+   
     const movies = await db.movie.findMany({
       where: {
         // Use a case-insensitive search on the 'title' field
