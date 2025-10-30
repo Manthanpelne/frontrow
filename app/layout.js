@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
 import { Toaster } from "sonner";
+import HeaderWrapper from "@/components/HeaderWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,8 +14,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
-        <Header isAdminPage={false} />
-        <main className="min-h-screen my-20">{children}</main>
+        <HeaderWrapper isAdminPage={false} />
+        <main className="min-h-screen">{children}</main>
         <Toaster richColors position="top-right" />
         <footer className="bg-black text-white">footer</footer>
       </body>

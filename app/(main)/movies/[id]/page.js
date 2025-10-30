@@ -29,11 +29,11 @@ const Page = async ({ params }) => {
     
     // 3. CORRECT: Pass the object to the child component
     return (
-        <div>        
+        <section className='max-w-screen-2xl mx-auto px-4 sm:px-12 mt-20'>        
             {/* Pass the fetched movie data to the component */}
             <MovieDetailsPage movie={movie} />
         
-        </div>
+        </section>
     );
 };
 

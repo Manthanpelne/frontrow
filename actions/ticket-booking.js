@@ -217,14 +217,14 @@ export async function getBookedTicketsAction() {
       userEmail: ticket.user.email,
       movieTitle: ticket.showtime.movie.title,
       showtime: `${ticket.showtime.time} (${ticket.showtime.theater})`,
-      totalPrice: ticket.totalPrice,// This is a Decimal object
+      totalPrice: ticket.totalPrice.toString(),// This is a Decimal object
       bookingDate: ticket.createdAt,
       seatDetails: ticket.seats.map((s) => `${s.row}${s.seat} (${s.type})`).join(", "),
       seatCount: ticket.seats.length,
     }));
     return {
             success: true,
-            message: `Successfully retrieved ${formattedTickets.length} total bookings.`,
+            message: `Successfully retrieved ${bookedTickets.length} total bookings.`,
             tickets: TicketDetails,
     };
   } catch (error) {

@@ -2,7 +2,7 @@
 
 import { bookTicketsAction, getBookedSeatsAction } from "@/actions/ticket-booking";
 import { Loader2 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -22,6 +22,34 @@ const getSeatTypeConfig = (row, seatTypes, colors) => {
   return { type: firstType, color: colors[0], ...firstConfig };
 };
 
+
+//2nd helper function for adding default rows insife seatTypes
+const convertSeatPrices = (pricesArray) => {
+  // Define default row distribution (you'll need to customize this logic)
+  const defaultRowDistribution = {
+    standard: { rows: [0, 1, 2] },
+    vip: { rows: [3, 4, 5] },
+    premium: { rows: [6, 7] },
+  };
+
+  const seatTypesObject = {};
+  
+  pricesArray.forEach(priceItem => {
+    // Normalize the seat type name (e.g., 'Standard' -> 'standard') for use as a key
+    const typeKey = priceItem.seatType.toLowerCase();
+    
+    seatTypesObject[typeKey] = {
+      name: priceItem.seatType,
+      // Ensure price is a number
+      price: parseFloat(priceItem.price), 
+      // Add default row distribution based on the type name
+      rows: defaultRowDistribution[typeKey] ? defaultRowDistribution[typeKey].rows : [],
+    };
+  });
+  
+  return seatTypesObject;
+};
+
 // --- END: Helper Functions ---
 
 
@@ -31,25 +59,47 @@ const TicketBookingPage = ({
     seatsPerRow: 12,
     aislePosition: 5,
   },
-  seatTypes = {
-    standard: { name: "Standard", price: 150.00, rows: [0, 1, 2] },
-    vip: { name: "VIP", price: 350.00, rows: [3, 4, 5] },
-    premium: { name: "Premium", price: 250.00, rows: [6, 7] },
-  },
   bookedSeats: initialBookedSeats = [],
   onBookingComplete = () => {},
   title = "Cinema Hall Booking",
   subtitle = "Select your preferred seats",
 }) => {
 
-   const params = useParams()
-   const showtimeId = Number(params.showtimeid);
-
-
     const [bookedSeats, setBookedSeats] = useState(initialBookedSeats);
     const [isFetchingSeats, setIsFetchingSeats] = useState(true)
     const [isBooking, setIsBooking] = useState(false) //for button loading state
 
+
+   const params = useParams()
+   const searchParams = useSearchParams()
+   const showtimeId = Number(params.showtimeid);
+   const pricesParam = searchParams.get("prices");
+
+
+   const defaultSeatTypes = {
+     standard: { name: "Standard", price: 150.00, rows: [0, 1, 2] },
+     vip: { name: "VIP", price: 350.00, rows: [3, 4, 5] },
+     premium: { name: "Premium", price: 250.00, rows: [6, 7] },
+  };
+
+const seatTypes = useMemo(() => {
+        let seatTypesFromUrl = {};
+        
+        if (pricesParam) {
+            try {
+                // Decode and Parse the JSON string
+                const seatPrices = JSON.parse(decodeURIComponent(pricesParam));
+                seatTypesFromUrl = convertSeatPrices(seatPrices);
+            } catch (error) {
+                console.error("Error processing seat prices from URL. Using default.", error);
+            }
+        }
+        
+        // Return dynamic data if available, otherwise return default
+        return Object.keys(seatTypesFromUrl).length > 0 ? seatTypesFromUrl : defaultSeatTypes;
+    }, [pricesParam]); // Recalculate only if pricesParam changes
+
+    //console.log("seattype", seatTypes);
 
     //fetching boooked seats
     useEffect(() => {
