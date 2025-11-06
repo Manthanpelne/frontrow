@@ -123,10 +123,10 @@ export default function Home() {
 
   return (
     <>
-      <div className="relative h-screen w-full">
+      <div className="relative min-h-screen w-full">
         {/* 2. Image with repeating background and blackish bottom gradient overlay */}
-        <div
-          className="absolute inset-0 bg-repeat bg-center bg-contain"
+            <div
+          className="absolute -top-40 inset-0 bg-repeat bg-center bg-contain"
           style={{
             // Use the path relative to the 'public' directory
             backgroundImage: "url('/frontrowHero.jpg')",
@@ -137,14 +137,14 @@ export default function Home() {
         </div>
 
         {/* 4. Text on the image */}
-        <div className="absolute inset-x-0 top-1/2 text-center text-white p-4">
-          <h1 className="text-5xl font-extrabold text-[#ECF86E]">
+        <div className="absolute inset-x-0 bottom-24 md:bottom-40 text-center text-white p-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-[#ECF86E]">
             The Front Row Experience
           </h1>
-          <p className="mt-2 text-xl pb-10">The best view, every time.</p>
+          <p className="mt-2 italic md:text-xl pb-10">The best view, every time.</p>
 
-          <div className="flex items-center gap-5 w-max m-auto">
-            <p className="text-3xl text-[#ECF86E]  font-extrabold">
+          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5 w-max m-auto">
+            <p className="text-2xl md:text-3xl text-[#ECF86E]  font-extrabold">
               Book Your Tickets Now
             </p>
             <Link href="/movies/" passHref>
@@ -188,9 +188,9 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="max-w-screen-2xl mx-auto px-4 sm:px-12 mt-20">
+      <section className="max-w-screen-2xl mx-auto px-4 sm:px-12 mt-14 md:mt-20">
         {/* 3. Trending Movies Carousel */}
-        <section className="mb-20">
+        <section className="mb-14 md:mb-20">
           <div className="flex justify-between items-baseline mb-4">
             <h2 className="text-2xl font-bold text-gray-900">
               🎬 The Buzz: Trending Now
@@ -235,7 +235,7 @@ export default function Home() {
         </section>
 
         {/* 4. Events and Activities Showcase */}
-        <section className="mb-20">
+        <section className="mb-14 md:mb-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             ✨ Weekend Plans: Top Events Near You
           </h2>
@@ -294,7 +294,7 @@ export default function Home() {
 
         {/* Bank Offers Banner - (Existing) */}
         <div
-          className="bg-[#fdfeec] md:w-max border-l-6 border-[#ECF86E] text-[#363723] p-6 mb-12 rounded-lg"
+          className="bg-[#fdfeec] border-l-6 border-[#ECF86E] text-[#363723] p-6 mb-12 rounded-lg"
           role="alert"
         >
           <p className="font-bold mb-2">🎉 Special Offer!</p>
@@ -308,7 +308,7 @@ export default function Home() {
         </div>
 
         {/* 3. Key Features Grid (New Section) */}
-        <section className="mb-12 md:mb-20 bg-white p-8 rounded-xl">
+        <section className="mb-14 md:mb-20 bg-white md:p-8 rounded-xl">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
             Why Book with FrontRow?
           </h2>

@@ -15,7 +15,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-let limit = 1;
+let limit = 8;
 
 const MoviePage = () => {
   const [search, setSearch] = useState("");
@@ -94,7 +94,7 @@ const MoviePage = () => {
         pageToFetch,
         limit
       );
-      if (result.success) {
+      if (result?.success) {
         console.log("movies", result.movies);
         setMovies(result.movies);
         //console.log("movies",result.movies)
@@ -126,32 +126,31 @@ const MoviePage = () => {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handlePageChange = (newPage) => {};
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if(newPage >=1 && newPage <= totalPages){
+      //setting new "page" parameter to page number in url
+      params.set("page", newPage.toString())
+      router.push(`${pathname}?${params.toString()}`)
+      window.scrollTo({top:0, behavior:"smooth"})
+    }
+  };
 
-  const movie = [
-    {
-      img: "https://fetsymbxwehbtcrliexs.supabase.co/storage/v1/object/public/movie-images/movies/b5142786-7ab8-4775-ad07-b8af17bb6147/image-1760769668070-0.jpeg",
-      title: "Spider-man: Across the spider-verse",
-      rating: 8.4,
-      language: "English, hindi",
-      price: 250,
-    },
-  ];
+  const getPageNumbers = (totalPages) => {
+  return Array.from({ length: totalPages }, (_, i) => i + 1);
+};
 
   return (
-    <section className="max-w-screen-2xl mx-auto px-4 sm:px-12 mt-20">
-      <h1 className="text-4xl font-extrabold pt-5 mb-6">Browse Movies Shows</h1>
+    <section className="max-w-screen-2xl mx-auto px-4 sm:px-12">
+      <h1 className="text-2xl md:text-4xl font-extrabold pt-5 mb-6">Browse Movies Shows</h1>
 
       {/* search & filter */}
-      <h2 className="mb-3 text-sm flex items-center opacity-60">
-        Filters <Filter className="w-3.5" />{" "}
-      </h2>
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <Select
           value={languageFilterFromUrl}
           onValueChange={handleLanguageChange}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="All Languages" />
           </SelectTrigger>
           <SelectContent>
@@ -174,13 +173,13 @@ const MoviePage = () => {
               type="search"
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search movies, shows, concerts, standups, etc..."
-              className="pl-9 w-full placeholder:text-gray-400"
+              className="pl-9 w-full placeholder:text-xs placeholder:text-gray-400"
             />
           </div>
         </form>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-5 md:mt-8">
         {/* movie listing */}
         {loading ? (
           <div className="flex justify-center items-center h-64 opacity-35">
@@ -190,18 +189,20 @@ const MoviePage = () => {
         ) : (
           <>
             {movies.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-12">
                 {movies.map((movie) => (
                   <Link href={`/movies/${movie.id}`} key={movie.id}>
                     <div
                       key={movie.title}
-                      className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300 cursor-pointer"
+                      className="bg-white rounded-lg shadow-lg transform hover:scale-[1.02] transition duration-300 cursor-pointer"
                     >
+                      <div className="h-[300px] p-4 overflow-hidden">
                       <img
                         src={movie.poster}
                         alt={movie.title}
-                        className="w-full object-fill h-[380px]"
+                        className="rounded-lg drop-shadow-xl"
                       />
+                      </div>
                       <div className="p-3">
                         <div className="flex mb-1 items-center justify-between gap-4">
                           <h3 className="font-semibold text-sm text-gray-900 w-[50%] truncate">
@@ -232,6 +233,46 @@ const MoviePage = () => {
             )}
 
             {/* Pagination i'll do it afterwards */}
+            {totalPages>1 && (
+              <div className="flex justify-center items-center space-x-2 mt-12">
+                {/* Previous Button */}
+                <button
+                onClick={()=>handlePageChange(currentPageFromUrl - 1)}
+                disabled={currentPageFromUrl === 1}
+                className="px-4 py-2 text-sm font-semibold rounded-lg border transition-colors duration-200 
+                   disabled:opacity-50 disabled:cursor-not-allowed bg-black/90 text-[#ECF86E] 
+                   hover:bg-black"
+                >
+                  Previous
+                </button>
+                
+                {/* Page Numbers */}
+               {getPageNumbers(totalPages).map((pageNumber) => (
+              <button
+                  key={pageNumber}
+                  onClick={() => handlePageChange(pageNumber)}
+                  className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-colors duration-200 
+                      ${currentPageFromUrl === pageNumber
+                          ? "bg-[#ECF86E] text-black border-black/90" // Active page style
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100" // Inactive page style
+                      }`}
+              >
+                  {pageNumber}
+              </button>
+            ))}
+                
+                {/* Next Button */}
+                <button
+                  onClick={() => handlePageChange(currentPageFromUrl + 1)}
+                  disabled={currentPageFromUrl === totalPages}
+                  className="px-4 py-2 text-sm font-semibold rounded-lg border transition-colors duration-200 
+                            disabled:opacity-50 disabled:cursor-not-allowed bg-black/90 text-[#ECF86E] 
+                            hover:bg-black"
+              >
+                  Next
+              </button>
+              </div>
+            )}
           </>
         )}
       </div>

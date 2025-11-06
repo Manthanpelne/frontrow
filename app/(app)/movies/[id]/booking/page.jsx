@@ -263,8 +263,8 @@ const seatTypes = useMemo(() => {
       toast.error(result.message)
     }
    } catch (error) {
-    console.error(error);
-     toast.error("Booking failed due to a network or server error.");
+      console.error(error.message)
+      //toast.error(error)
         } finally {
             setIsBooking(false);
         }
@@ -325,12 +325,12 @@ const seatTypes = useMemo(() => {
         
         {/* Title */}
         <div className="text-center">
-          <h1 className="text-3xl lg:text-4xl font-extrabold text-indigo-700 mb-2 ">{title}</h1>
-          <p className="text-gray-500 mb-8">{subtitle}</p>
+          <h1 className="text-3xl lg:text-4xl font-extrabold text-[#96a20e] drop-shadow-2xl mb-2 ">{title}</h1>
+          <p className="text-[gray] mb-8">{subtitle}</p>
         </div>
 
         {/* Screen */}
-        <div className="w-3/4 mx-auto h-2 bg-gray-800 rounded-2xl shadow-xl"></div>
+        <div className="w-3/4 mx-auto h-2 bg-linear-to-r from-gray-500 via-gray-800 to-gray-500 rounded-2xl shadow-xl"></div>
         <p className="text-center mb-10 uppercase text-gray-700 font-semibold text-sm mt-3">SCREEN THIS WAY</p>
 
 
@@ -383,7 +383,7 @@ const seatTypes = useMemo(() => {
                 </div>
             </div>
             
-            <div className="flex justify-between items-center text-3xl font-extrabold text-gray-900 border-t pt-4">
+            <div className="flex justify-between items-center md:text-xl font-extrabold text-gray-900 border-t pt-4">
                 <span>Total Payable (INR):</span>
                 <span>₹{totalSelectedPrice}</span>
             </div>
@@ -392,7 +392,7 @@ const seatTypes = useMemo(() => {
                 // Use the new handler that includes the toast logic
                 onClick={handleBookingComplete}
                 disabled={selectedSeats.length === 0 || isBooking}
-                className="mt-6 w-full px-6 py-4 flex items-center justify-center bg-green-600 text-white font-bold rounded-xl shadow-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-xl"
+                className="mt-6 w-full px-6 cursor-pointer py-4 flex items-center justify-center bg-green-600 text-white font-bold rounded-xl shadow-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-xl"
             >
               {isBooking ? (
                 <> 

@@ -19,7 +19,7 @@ const MovieDetailsPage = ({ movie }) => {
       {/* --- Main Content Section (Poster and Details) --- */}
       <div className="flex flex-col md:flex-row gap-8 text-white">
         {/* Poster Image (Visible only on smaller screens) */}
-        <div className="md:hidden">
+        <div className="md:hidden mt-8">
           <img
             src={movie?.poster}
             alt={movie?.title}
@@ -30,14 +30,14 @@ const MovieDetailsPage = ({ movie }) => {
         {/* Main Details and Backdrop - NOW DYNAMIC HEIGHT */}
         <div
           // 1. **Outer Container**: Height is relative to content inside.
-          className="relative w-full rounded-xl overflow-hidden shadow-2xl bg-cover bg-center"
+          className="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-top bg-no-repeat bg-cover"
           style={{ backgroundImage: `url('${backdropUrl}')` }}
         >
           {/* 2. **Gradient/Dark Overlay**: Absolute to cover parent background. */}
-          <div className="absolute inset-0 bg-linear-to-t from-black to-black/60"></div>
+          <div className="absolute rounded-2xl inset-0 bg-linear-to-t from-black/80 to-black/60"></div>
 
           {/* 3. **Content Layer**: Normal flow, defining the height with content and padding. */}
-          <div className="relative p-6 md:p-14 flex flex-col gap-6">
+          <div className="relative p-5 md:p-14 flex flex-col gap-6">
             {/* Inner Wrapper for Poster and Details (Uses Flex-row on md screens) */}
             <div className="flex flex-col md:flex-row gap-10 items-start">
               {/* Poster (Hidden on small screens, prominent on large) */}
@@ -50,13 +50,13 @@ const MovieDetailsPage = ({ movie }) => {
               {/* Text Details Container */}
               <div className="flex flex-col justify-between w-full">
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-[#ECF86E]">
+                  <h1 className="text-3xl md:text-5xl font-extrabold mb-4 md:mb-10 text-[#ECF86E]">
                     {movie?.title}
                   </h1>
 
                   {/* Rating and Votes - FILLED IN */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <span className="flex items-center text-xl font-bold">
+                  <div className="flex items-center gap-2 flex-wrap md:gap-4 mb-4">
+                    <span className="flex items-center md:text-xl font-bold">
                       <Star
                         fill="rgb(253 224 71)"
                         className="w-5 h-5 text-[#ECF86E] mr-1"
@@ -64,7 +64,7 @@ const MovieDetailsPage = ({ movie }) => {
                       />
                       {movie?.rating} / 10
                     </span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-[#9a9898]">
                       ({movie?.votes} votes)
                     </span>
                     <span className="text-sm border border-gray-500 rounded px-2 py-0.5 ml-2 flex items-center">
@@ -74,17 +74,17 @@ const MovieDetailsPage = ({ movie }) => {
                   </div>
 
                   {/* Metadata Grid - FILLED IN */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2 gap-x-6 text-sm mb-6">
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-8 text-sm mb-6">
                     <div className="flex items-center">
-                      <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-400 font-semibold">
+                      <Calendar className="w-4 h-4 text-[#9a9898] mr-2" />
+                      <span className="text-[#9a9898] font-semibold">
                         Release:
                       </span>
                       <span className="ml-2 font-medium">{releaseDate}</span>
                     </div>
                     <div className="flex items-center">
-                      <Clock className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-400 font-semibold">
+                      <Clock className="w-4 h-4 text-[#9a9898] mr-2" />
+                      <span className="text-[#9a9898] font-semibold">
                         Duration:
                       </span>
                       <span className="ml-2 font-medium">
@@ -92,8 +92,8 @@ const MovieDetailsPage = ({ movie }) => {
                       </span>
                     </div>
                     <div className="flex items-center sm:col-span-1">
-                      <User className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-400 font-semibold">
+                      <User className="w-4 h-4 text-[#9a9898] mr-2" />
+                      <span className="text-[#9a9898] font-semibold">
                         Director:
                       </span>
                       <span className="ml-2 font-medium truncate">
@@ -101,8 +101,8 @@ const MovieDetailsPage = ({ movie }) => {
                       </span>
                     </div>
                     <div className="flex items-center col-span-2 sm:col-span-3">
-                      <Tag className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-400 font-semibold">
+                      <Tag className="w-4 h-4 text-[#9a9898] mr-2" />
+                      <span className="text-[#9a9898] font-semibold">
                         Genre:
                       </span>
                       <span className="ml-2 font-medium">
@@ -112,9 +112,9 @@ const MovieDetailsPage = ({ movie }) => {
                   </div>
 
                   {/* Cast - FILLED IN */}
-                  <p className="text-lg font-bold mb-2 flex items-start">
-                    <Users className="w-5 h-5 text-gray-400 mr-3 mt-1 shrink-0" />
-                    <span className="text-gray-400 font-semibold">Cast:</span>
+                  <p className=" font-bold mb-2 flex items-start">
+                    <Users className="w-5 h-5 text-[#9a9898] mr-1 shrink-0" />
+                    <span className="text-[#9a9898] font-semibold">Cast:</span>
                     <span className="ml-3 font-normal text-gray-300 flex flex-wrap">
                       {movie?.cast?.map((actor, index) => (
                         <span
@@ -144,7 +144,7 @@ const MovieDetailsPage = ({ movie }) => {
 
       {/* --- Showtimes Section --- */}
       <div className="mt-8">
-        <h2 className="text-3xl font-extrabold mb-4">Showtimes</h2>
+        <h2 className="text-2xl md:text-3xl font-extrabold mb-4">Showtimes</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {movie?.showtimes?.map((showtime) => {
             //first: stringifying the seatPrices array

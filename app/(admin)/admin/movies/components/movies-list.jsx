@@ -93,21 +93,22 @@ const MoviesList = () => {
          </div>
 
     {/* movies list */}
-    <div className="bg-white mt-10 shadow-lg rounded-xl overflow-hidden">
+    <div className="bg-white mt-10 shadow-md border rounded-xl overflow-x-scroll">
         {loading ? (
-          <div className="flex justify-center items-center p-12 text-indigo-600">
-            <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-            <span className="text-lg">Loading movies...</span>
+          <div className="flex justify-center text-sm items-center p-12 opacity-35">
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            <span>Loading Data...</span>
           </div>
         ) : (
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-[#fcfcd9]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Duration</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Release Date</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/4">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rating</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Duration</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Theater & showtimes</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Created At</th>
+                <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -120,8 +121,15 @@ const MoviesList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{movie.rating.toFixed(1)} / 10</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">{movie.duration}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                   {movie.showtimes.map((th)=>(
+                      <p key={th.id} className='flex items-center text-sm pb-1'>
+                        <span className='font-semibold pr-1'>{th?.theater}</span> {" "} - {" "} {th?.time}
+                      </p>
+                    ))}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
-                      {new Date(movie.releaseDate).toLocaleDateString()}
+                      {new Date(movie.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <Button
@@ -129,7 +137,7 @@ const MoviesList = () => {
                         size="icon"
                         onClick={() => handleDelete(movie.id, movie.title)}
                         title={`Delete ${movie.title}`}
-                        className="h-8 w-8 cursor-pointer"
+                        className="h-8 w-8 hover:bg-red-500 cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -146,9 +154,8 @@ const MoviesList = () => {
             </tbody>
           </table>
         )}
-      </div>
+    </div>
     
-
     </div>
   )
 }

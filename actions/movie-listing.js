@@ -33,17 +33,6 @@ export const getMovies = async (
   limit = 1
 ) => {
   try {
-        const session = await auth();
-    if (!session?.user?.email) {
-      throw new Error("Unauthorized!");
-    }
-
-    const loggedInUser = await db.user.findUnique({
-      where: {
-        email: session?.user?.email,
-      },
-    });
-    if (!loggedInUser) throw new Error("User does not exist");
     
     //pagination
     const take = parseInt(limit);
@@ -87,7 +76,6 @@ export const getMovies = async (
       limit: take,
     };
   } catch (error) {
-    console.error("error fetching movies", error);
-    throw new Error("Failed to fetch movies");
+    console.error("error fetching movies", error.message);
   }
 };

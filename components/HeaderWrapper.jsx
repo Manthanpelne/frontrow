@@ -1,4 +1,3 @@
-"use server"
 
 import { checkUser } from '@/lib/checkUser';
 import React from 'react'
