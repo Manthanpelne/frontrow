@@ -13,10 +13,20 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+      
+  const router = useRouter()
+
+   const handleRouteClick=()=>{
+     startTransition(()=>{
+       router.push("/movies/")
+     })
+   }
 
   const handleClick = (e) => {
     setIsLoading(true);
@@ -48,28 +58,28 @@ export default function Home() {
         "https://i.pinimg.com/1200x/77/9d/a3/779da30964fb69b47c4f03138d482f9d.jpg",
     },
     {
-      title: "Kantara2: A Legend",
+      title: "Dune",
       rating: 9.3,
-      genre: "Action/Thriller",
+      genre: "Action/Thriller/Si-Fi",
       language: "Hindi, Tamil, Telugu",
       imageUrl:
-        "https://i.pinimg.com/1200x/8d/fb/44/8dfb44d82eab9d3df6fb9a1b26573e01.jpg",
+        "https://i.pinimg.com/1200x/6a/ca/58/6aca58c43f149d1016587ad7fbedc621.jpg",
     },
     {
-      title: "Jawan2",
-      rating: 8.8,
-      genre: "Action/Drama",
-      language: "Hindi, Tamil, Telugu",
+      title: "Mission Impossible: The final Reckoning",
+      rating: 8,
+      genre: "Action",
+      language: "English, Hindi, Telugu",
       imageUrl:
-        "https://i.pinimg.com/1200x/59/27/50/5927501eeb30666518c6b9fa309fc4be.jpg",
+        "https://i.pinimg.com/736x/94/39/cb/9439cbbdc229a4e984aa18d56e403500.jpg",
     },
     {
-      title: "Oppenheimer2",
-      rating: 9.0,
+      title: "F1: The Movie",
+      rating: 9.5,
       genre: "Biography/Drama",
       language: "English, Hindi",
       imageUrl:
-        "https://i.pinimg.com/1200x/77/9d/a3/779da30964fb69b47c4f03138d482f9d.jpg",
+        "https://i.pinimg.com/736x/20/62/03/206203d4e26fd4bb655eaf01783a4ff2.jpg",
     },
   ];
 
@@ -149,7 +159,7 @@ export default function Home() {
             </p>
             <Link href="/movies/" passHref>
               <Button
-                className="flex items-center text-xl h-14 bg-black text-[#ECF86E] w-max m-auto cursor-pointer border-2 border-[#7c805b] rounded-xl"
+                className="flex items-center text-xl font-extrabold tracking-wide italic h-14 bg-black text-[#ECF86E] hover:text-[#f0ff46] w-max m-auto cursor-pointer border-4 border-[#46482c] transition-all duration-300  hover:border-[#616440] rounded-tl-2xl rounded-br-2xl"
                 onClick={handleClick}
                 disabled={isLoading} // Optional: Disable button while loading
               >
@@ -196,7 +206,7 @@ export default function Home() {
               🎬 The Buzz: Trending Now
             </h2>
             <a
-              href="#"
+              href="/movies/"
               className="text-[#5A5C3E] font-medium hover:text-red-700 transition"
             >
               View All Movies →
@@ -206,14 +216,26 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {trendingMovies.map((movie) => (
               <div
+                onClick={handleRouteClick}
+                disabled={isPending}
                 key={movie.title}
                 className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300 cursor-pointer"
               >
-                <img
-                  src={movie.imageUrl}
-                  alt={movie.title}
-                  className="w-full h-[300px] object-cover"
-                />
+                 <img
+                src={movie.imageUrl}
+                alt={movie.title}
+                className="w-full h-[300px] object-cover"
+            />
+            {/* 2. OPTIONAL: Show a small loading overlay if desired, but image is usually better */}
+            {isPending && (
+                <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                     <svg className="animate-spin text-yellow-600 h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            )}
+               
                 <div className="p-3">
                   <div className="flex mb-1 items-center justify-between gap-4">
                     <h3 className="font-semibold text-sm text-gray-900 w-[50%] truncate">

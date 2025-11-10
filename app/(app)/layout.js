@@ -8,7 +8,7 @@ import React from 'react'
 
 
 export default function AppLayout({children}){
-  return <div className='my-32'>
+  return <div className='my-24 md:my-32 min-h-screen'>
     <HeaderWrapper isAdminPage={false} />
     {children}</div>
 }

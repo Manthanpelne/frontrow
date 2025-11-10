@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import {
@@ -7,6 +8,7 @@ import {
   getTotalMoviesCountAction,
   getTotalRevenueAction,
 } from "@/actions/admin-dashboard-actions"; // Import new actions
+import { Loader2 } from "lucide-react";
 
 // Component for a single metric card
 const MetricCard = ({ title, value, icon, bgColor, textColor }) => (
@@ -14,10 +16,10 @@ const MetricCard = ({ title, value, icon, bgColor, textColor }) => (
     className={`p-6 ${bgColor} rounded-xl shadow-lg transform transition duration-300 hover:scale-[1.02]`}
   >
     <div className="flex items-center justify-between">
-      <div className={`text-4xl font-extrabold ${textColor}`}>{value}</div>
+      <div className={`text-2xl lg:text-4xl font-extrabold ${textColor}`}>{value}</div>
       <div className={`text-4xl ${textColor}`}>{icon}</div>
     </div>
-    <div className={`mt-2 text-sm font-medium text-white/90`}>{title}</div>
+    <div className={`mt-2 text-sm font-bold text-white`}>{title}</div>
   </div>
 );
 
@@ -68,20 +70,22 @@ const AdminPage = () => {
   }, [fetchMetrics]);
 
   return (
-    <div className="p-4 md:p-8 bg-[#f8f8e9]">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-5">
+    <div className="px-4 md:px-12">
+    <div className="p-4 md:p-8 rounded-xl bg-[#f5f5f5]">
+      <h1 className="text-xl sm:text-3xl font-extrabold text-gray-900 mb-5">
         Administrator Portal Dashboard
       </h1>
 
       {/* --- 1. Dashboard Metrics Grid --- */}
-      <div className="bg-white rounded-2xl px-10 flex items-center">
-        <div className="w-1/2 grid grid-cols-1 h-max sm:grid-cols-2 gap-6">
-          {metricsLoading ? (
-            <div className="lg:col-span-4 text-center p-4 text-gray-500">
+      <div className="bg-white rounded-2xl py-5 px-5 lg:px-10 flex flex-col lg:flex-row items-center">
+         {metricsLoading && (
+            <div className="flex items-center gap-1 text-center p-4 text-gray-500">
+              <Loader2/>
               Loading Dashboard Metrics...
             </div>
-          ) : (
-            <>
+          )}
+           {!metricsLoading && (
+        <div className="lg:w-1/2 grid grid-cols-1 h-max sm:grid-cols-2 gap-4 md:gap-6">
               <MetricCard
                 title="Total Revenue"
                 value={`₹${metrics.revenue}`}
@@ -95,7 +99,7 @@ const AdminPage = () => {
                 icon="🎫"
                 bgColor="bg-green-600"
                 textColor="text-white"
-              />
+                />
               <MetricCard
                 title="Registered Users"
                 value={metrics.users}
@@ -110,14 +114,14 @@ const AdminPage = () => {
                 bgColor="bg-yellow-600"
                 textColor="text-white"
               />
-            </>
-          )}
         </div>
-        <div className="w-1/2">
+           )}
+        <div className="hidden lg:block lg:w-1/2">
           <img className="h-[400px] w-full" src="/graph.jpg" alt="" />
         </div>
       </div>
     </div>
+</div>
   );
 };
 

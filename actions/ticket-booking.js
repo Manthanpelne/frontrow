@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { Decimal } from "decimal.js";
-import { redirect } from "next/navigation";
+
 
 //function to fetch booked seats for specific showtime if available
 export async function getBookedSeatsAction(showtimeId) {
@@ -39,8 +39,6 @@ export async function getBookedSeatsAction(showtimeId) {
   }
 }
 
-
-//booking tickets action
 export async function bookTicketsAction({ showtimeId, selectedSeatsData }) {
   const session = await auth();
   const userEmail = session?.user?.email;
@@ -108,9 +106,11 @@ export async function bookTicketsAction({ showtimeId, selectedSeatsData }) {
       });
 
       if (existingBookings.length > 0) {
-        const conflictingSeats = existingBookings.map((b) => b.seatId).join(", ");
+        const conflictingSeats = existingBookings
+          .map((b) => b.seatId)
+          .join(", ");
         throw new Error(
-          `The following seats/seat ie ${conflictingSeats} were booked by someone else. Please select new seats.`
+          `The following seats were just booked by someone else: ${conflictingSeats}. Please select new seats.`
         );
       }
 
@@ -253,16 +253,12 @@ export async function getBookedTicketsAction() {
 }
 
 
-// Assume 'db' is your Prisma client instance and 'auth'/'redirect' are defined.
 export async function getUsersBookingsAction() {
     // 1. Authentication and Authorization Check
     const session = await auth();
     const userEmail = session?.user?.email;
 
     if (!userEmail) {
-        // Fail fast if the user is not authenticated
-        // Note: 'redirect' is usually a Next.js/framework utility.
-        redirect("/")
         return {
             success: false,
             message: "Please Sign In first!",
@@ -346,7 +342,7 @@ export async function getUsersBookingsAction() {
 
             return ticket;
         });
-        //console.log("bookings",bookings)
+        console.log("bookings",bookings)
 
         return {
             success: true,

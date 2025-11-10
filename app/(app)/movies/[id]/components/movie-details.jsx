@@ -1,4 +1,4 @@
-import { Star, Calendar, Clock, User, Users, Tag, Globe } from "lucide-react";
+import { Star, Calendar, Clock, User, Users, Tag, Globe, Ticket, Theater, VectorSquareIcon } from "lucide-react";
 import Link from "next/link";
 
 const MovieDetailsPage = ({ movie }) => {
@@ -19,36 +19,38 @@ const MovieDetailsPage = ({ movie }) => {
       {/* --- Main Content Section (Poster and Details) --- */}
       <div className="flex flex-col md:flex-row gap-8 text-white">
         {/* Poster Image (Visible only on smaller screens) */}
-        <div className="md:hidden mt-8">
+        <div className="md:hidden sm:mt-8">
           <img
             src={movie?.poster}
             alt={movie?.title}
-            className="w-full h-auto object-cover rounded-lg shadow-xl"
+            className="w-full h-auto object-cover rounded-2xl shadow-xl"
           />
         </div>
 
         {/* Main Details and Backdrop - NOW DYNAMIC HEIGHT */}
         <div
           // 1. **Outer Container**: Height is relative to content inside.
-          className="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-top bg-no-repeat bg-cover"
+          className="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-top bg-no-repeat md:bg-repeat bg-cover md:bg-contain"
           style={{ backgroundImage: `url('${backdropUrl}')` }}
         >
           {/* 2. **Gradient/Dark Overlay**: Absolute to cover parent background. */}
-          <div className="absolute rounded-2xl inset-0 bg-linear-to-t from-black/80 to-black/60"></div>
+          <div className="absolute rounded-2xl inset-0 bg-linear-to-r from-black via-black/60 to-black"></div>
 
           {/* 3. **Content Layer**: Normal flow, defining the height with content and padding. */}
           <div className="relative p-5 md:p-14 flex flex-col gap-6">
             {/* Inner Wrapper for Poster and Details (Uses Flex-row on md screens) */}
-            <div className="flex flex-col md:flex-row gap-10 items-start">
+            <div className="">
               {/* Poster (Hidden on small screens, prominent on large) */}
-              <img
-                src={movie?.poster}
-                alt={movie?.title}
-                className="hidden md:block w-48 h-auto object-cover rounded-lg shadow-xl shrink-0"
-              />
+             
 
               {/* Text Details Container */}
-              <div className="flex flex-col justify-between w-full">
+              <div className="flex flex-col md:flex-row gap-10 w-full">
+                 <img
+                src={movie?.poster}
+                alt={movie?.title}
+                className="hidden md:block w-full md:w-48  h-auto object-cover rounded-lg shadow-xl shrink-0"
+              />
+
                 <div>
                   <h1 className="text-3xl md:text-5xl font-extrabold mb-4 md:mb-10 text-[#ECF86E]">
                     {movie?.title}
@@ -74,7 +76,7 @@ const MovieDetailsPage = ({ movie }) => {
                   </div>
 
                   {/* Metadata Grid - FILLED IN */}
-                  <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-8 text-sm mb-6">
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-3 lg:gap-8 text-sm mb-6">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 text-[#9a9898] mr-2" />
                       <span className="text-[#9a9898] font-semibold">
@@ -129,14 +131,14 @@ const MovieDetailsPage = ({ movie }) => {
                   </p>
                 </div>
 
-                <hr className="my-5 border-white/40" />
-
+              </div>
+               
+ <hr className="my-5 border-white/40" />
                 {/* Synopsis */}
 
-                <p className="text-gray-300 leading-relaxed italic text-sm ">
+                <p className="text-gray-300 leading-relaxed italic text-xs sm:text-sm ">
                   {movie?.synopsis}
                 </p>
-              </div>
             </div>
           </div>
         </div>
@@ -169,10 +171,12 @@ const MovieDetailsPage = ({ movie }) => {
                 }
               `}
               >
+                <div className="flex items-center justify-between">
+                  <div>
                 <p className="text-2xl font-bold mb-1 flex items-center">
                   <Clock className="w-5 h-5 mr-2" /> {showtime.time}
                 </p>
-                <p className="text-black font-semibold text-sm mb-2">
+                <p className="text-black opacity-60 font-semibold text-sm mb-2">
                   Theater: {showtime.theater}
                 </p>
                 <p className="text-sm font-semibold">
@@ -189,6 +193,11 @@ const MovieDetailsPage = ({ movie }) => {
                     {showtime.filling}
                   </span>
                 </p>
+                </div>
+                <div>
+                    <span className="text-3xl md:text-6xl">🍿🎬</span>
+                </div>
+                </div>
                 <div className="mt-3 border-t border-black/30 pt-3">
                   <p className="text-xs text-black font-semibold mb-1">
                     Price Options:

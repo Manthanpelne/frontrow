@@ -36,7 +36,7 @@ const Sidebar = () => {
       {routes.map((route)=>{
         return(
           <Link key={route.href} href={route.href} className={cn("flex items-center gap-3 px-4 hover:bg-gray-100 transition-all duration-200 py-2 text-black/70 hover:text-black",
-            pathname == route.href ? "bg-[#fcfcd9] hover:bg-[#fcfcd9]  text-[#81810a]" : "null"
+            pathname == route.href ? "bg-green-50 hover:bg-green-50  text-green-700 rounded-r-lg border border-green-200" : "border rounded-r-lg"
           )}>
             <route.icon className='h-5 w-5' />
             {route.label}
@@ -46,7 +46,7 @@ const Sidebar = () => {
     </div>
 
     {/* mobile sidebar */}
-    <div className='md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-2xl border-t flex justify-around items-center h-16'>
+    <div className='md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-2xl overflow-hidden border-t flex justify-around items-center h-16'>
          {routes.map((route)=>{
         return(
           <Link key={route.href} href={route.href} className={cn("flex flex-col items-center gap-1 px-4 hover:bg-gray-100 transition-all duration-200 py-3 flex-1 text-black/70 hover:text-black",

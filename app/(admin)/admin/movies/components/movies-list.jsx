@@ -4,6 +4,7 @@ import { deleteMovies, getMovies } from '@/actions/movies'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2, Plus, Search, Trash2 } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -72,7 +73,7 @@ const MoviesList = () => {
   }
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 max-w-screen-2xl mx-auto'>
 
          <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
             <form onSubmit={(e)=> e.preventDefault()} className='flex w-full items-center gap-4 sm:w-auto'>
@@ -87,7 +88,7 @@ const MoviesList = () => {
               </div>
             </form>
 
-            <Button onClick={()=>router.push("/admin/movies/create")} className="cursor-pointer flex items-center w-full md:w-60 gap-1">
+            <Button onClick={()=>router.push("/admin/movies/create")} className="cursor-pointer shadow-lg hover:shadow-xl bg-[#322f2f] hover:bg-black flex items-center w-full md:w-60 gap-1">
               <Plus className='w-4 h-4'/>
               Add Movie</Button>
          </div>
@@ -101,14 +102,14 @@ const MoviesList = () => {
           </div>
         ) : (
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-[#fcfcd9]">
+            <thead className="bg-[#f1f1f1]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/4">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rating</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Duration</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Theater & showtimes</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Created At</th>
-                <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Rating</th>
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Duration</th>
+                  <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Theater & showtimes</th>
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Created At</th>
+                <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -119,25 +120,33 @@ const MoviesList = () => {
                         onClick={() => router.push(`/admin/movies/edit/${movie.id}`)}>
                         {movie.title}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{movie.rating.toFixed(1)} / 10</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">{movie.duration}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">{movie.rating.toFixed(1)} / 10</td>
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">{movie.duration}</td>
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                    {movie.showtimes.map((th)=>(
-                      <p key={th.id} className='flex items-center text-sm pb-1'>
+                      <p key={th.id} className='flex items-center justify-center  text-center text-sm pb-1'>
                         <span className='font-semibold pr-1'>{th?.theater}</span> {" "} - {" "} {th?.time}
                       </p>
                     ))}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
                       {new Date(movie.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Button
-                        variant="destructive"
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <Link
+                        href={`/admin/movies/edit/${movie.id}`}
+                        size="icon"
+              
+
+                        className="p-3 bg-green-100 rounded-lg text-green-600 transition-all duration-300 hover:bg-green-200 cursor-pointer"
+                      >
+                         Edit
+                      </Link>
+                        <Button
                         size="icon"
                         onClick={() => handleDelete(movie.id, movie.title)}
                         title={`Delete ${movie.title}`}
-                        className="h-8 w-8 hover:bg-red-500 cursor-pointer"
+                        className="h-8 w-8 ml-4 bg-red-400 transition-all duration-300 hover:bg-red-500 cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

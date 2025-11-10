@@ -5,13 +5,14 @@ import React, { useTransition } from 'react'
 import SignIn from './sign-in-button'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
 
   const isAdmin = initialIsAdmin;
 
      const router = useRouter(); 
+     const pathname = usePathname()
 
      console.log("isadminpage",isAdminPage)
   
@@ -29,21 +30,25 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
     })
   }
   
+    const bookingPath = pathname.includes("/bookings");
+console.log("bookingpath",bookingPath)
+  // 💡 Conditional class to hide the footer on small screens if it's an admin path
+  const visibilityClass = bookingPath ? 'hidden' : 'block';
 
 
   return (
-<header className="fixed top-6 w-[90%] md:w-[50%] left-1/2 -translate-x-1/2 rounded-2xl bg-[#eff1de]/40 backdrop-blur-sm z-50">
-      <nav className="mx-auto px-2 py-2 sm:py-4 sm:px-4 flex gap-5 items-center justify-between">
-        <a href='/' className='font-extrabold uppercase text-xs sm:text-sm rounded-sm bg-[#ECF86E] text-black p-2'>FrontRow</a>
+<header className="fixed top-6 w-[90%] md:w-[50%] left-1/2 -translate-x-1/2 rounded-2xl bg-[gray]/10 backdrop-blur-sm z-50">
+      <nav className="mx-auto px-2 py-2 sm:py-4 sm:px-4 flex gap-2 sm:gap-5 items-center justify-between">
+        <a href='/' className='font-extrabold uppercase text-xs sm:text-sm rounded-sm border-2 border-[white] bg-[#ECF86E] text-black p-2'>FrontRow</a>
         
         {/* Action Buttons */}
-        <div className="flex items-center space-x-1 md:space-x-4">
+        <div className="flex items-center space-x-1 sm:space-x-3 md:space-x-4">
           
           {isAdminPage ? (
             // 🚀 CASE 1: On the Admin Page (Admin Folder)
             //    Only render the 'Back to App' button.
             <Link href="/">
-              <Button className="flex items-center gap-2">
+              <Button className="flex cursor-pointer hover:bg-[#414140] shadow-md hover:shadow-xl transition-all duration-300 items-center gap-2">
                 <span>Back to App</span>
               </Button>
             </Link>
@@ -52,9 +57,9 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
             //    Render My Bookings, Admin Portal, and Sign In/Out.
             <>
               {/* My Bookings Link (Non-Admin User) */}
-              {!isAdmin && (
+               {!isAdmin  && (
                 <Button 
-                  className="flex min-w-28 items-center cursor-pointer border-2 border-[#6d6e63] gap-2"
+                  className={`${visibilityClass}  hover:bg-[#414140] shadow-md hover:shadow-xl transition-all duration-300 min-w-28 py-0 items-center cursor-pointer border-2 border-[#6d6e63] gap-2}`}
                   onClick={handleBookingClick}
                   disabled={isPending} 
                 >
@@ -66,15 +71,16 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
                       </svg>
                   
                   ) : (
-                    <span className="inline">My Bookings</span>
+                    <span className="inline text-xs sm:text-sm">My Bookings</span>
                   )}
                 </Button>
-              )}
+               )}
+              
 
               {/* Admin Portal Button (Admin User only) */}
               {isAdmin  && (
                 <Button 
-                  className="flex items-center text-xs md:text-sm cursor-pointer border-2 border-[#6d6e63] gap-2"
+                  className="flex hover:bg-[#414140] shadow-md hover:shadow-xl transition-all duration-300 items-center text-xs md:text-sm cursor-pointer border-2 border-[#6d6e63] gap-2"
                   onClick={handleClick}
                   disabled={isPending} 
                 >
@@ -88,7 +94,7 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
                       Loading...
                     </div>
                   ) : (
-                    <span className=" inline">Admin</span>
+                    <span className=" inline">Dashboard</span>
                   )}
                 </Button>
               )}

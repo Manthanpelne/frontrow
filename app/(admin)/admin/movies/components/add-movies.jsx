@@ -277,7 +277,7 @@ const ShowtimeFieldArray = ({
       </div>
 
       {/* Seat Prices Sub-Array */}
-      <h4 className="text-sm font-medium text-gray-700 pt-2 border-t mt-3">
+      <h4 className="text-sm font-medium text-gray-700 pt-5 border-t mt-8 ">
         Seat Prices & Types
       </h4>
       <p className="text-xs text-red-500 -mt-2">
@@ -287,7 +287,7 @@ const ShowtimeFieldArray = ({
         {priceFields.map((priceField, priceIndex) => (
           <div
             key={priceField.id}
-            className="flex gap-3 items-center p-2 bg-white border border-dashed rounded-md"
+            className="flex flex-col sm:flex-row gap-1 items-center p-2 bg-white border border-dashed rounded-md"
           >
       
             {/* Seat Type */}
@@ -296,6 +296,7 @@ const ShowtimeFieldArray = ({
               Seat Type
             </label>
             <Select
+            className=""
               // 1. Use setValue for the select component
               onValueChange={(value) =>
                 setValue(`showtimes.${index}.seatPrices.${priceIndex}.seatType`, value, { shouldValidate: true })
@@ -361,9 +362,10 @@ const ShowtimeFieldArray = ({
               <button
                 type="button"
                 onClick={() => removePrice(priceIndex)}
-                className="p-2 bg-red-400 text-white rounded-md hover:bg-red-500 transition duration-150"
+                className="p-2 flex text-xs items-center gap-1 bg-red-400 text-white rounded-md hover:bg-red-500 transition duration-150"
               >
-                <X className="w-3 h-3" />
+                Remove
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -526,6 +528,7 @@ useEffect(()=>{
               >
                 Genres (Comma-separated)
               </label>
+
               <input
                 id="genreString"
                 {...register("genreString")}
@@ -534,11 +537,13 @@ useEffect(()=>{
                   getError("genreString") ? "border-red-500" : "border-gray-300"
                 }`}
               />
+
               {getError("genreString") && (
                 <p className="mt-1 text-xs text-red-500">
                   {getError("genreString")}
                 </p>
               )}
+              
             </div>
 
             <div>

@@ -1,26 +1,19 @@
 "use server";
 
 import { auth } from "@/auth";
+import { checkAdminAuth } from "@/lib/checkAdminAuth";
 import { serializeMovies } from "@/lib/helper";
 import { db } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
+import { email } from "zod";
 
 //admin adding movies to db api
 export const addMovies = async ({ moviesData, images }) => {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return { authorized: false, reason: "not logged in" };
-    }
-    const loggedInUser = await db.user.findUnique({
-      where: {
-        email: session?.user?.email,
-      },
-    });
-    if (!loggedInUser) throw new Error("User does not exist");
+    await checkAdminAuth()
 
     const moviesId = uuidv4();
     const folderPath = `movies/${moviesId}`;
@@ -51,7 +44,7 @@ export const addMovies = async ({ moviesData, images }) => {
       const fileName = `image-${Date.now()}-${i}.${fileExtension}`;
       const filePath = `${folderPath}/${fileName}`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("movie-images")
         .upload(filePath, imageBuffer, {
           contentType: `image/${fileExtension}`,
@@ -105,7 +98,7 @@ export const addMovies = async ({ moviesData, images }) => {
       message: `${moviesData.title} movie got added successfully!`,
     };
   } catch (error) {
-   console.log("Failed to add movie",error)
+   console.log("Failed to add movie",error.message)
     return { success: false, message: "Failed to add a movie" };
   }
 };
@@ -113,19 +106,7 @@ export const addMovies = async ({ moviesData, images }) => {
 
 export const getMovies = async(search = "")=>{
  try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      throw new Error("Unauthorized!");
-    }
-
-    const loggedInUser = await db.user.findUnique({
-      where: {
-        email: session?.user?.email,
-      },
-    });
-    if (!loggedInUser) throw new Error("User does not exist");
-
-   
+    await checkAdminAuth()
     const movies = await db.movie.findMany({
       where: {
         // Use a case-insensitive search on the 'title' field
@@ -167,19 +148,132 @@ export const getMovies = async(search = "")=>{
 }
 
 
+export const editMovies = async({moviesData, images}) =>{
+  try {
+      await checkAdminAuth()
+      const movieId = moviesData.id
+        if (!movieId) throw new Error("Movie ID is required for editing.");
+
+        const folderPath = `movies/${movieId}`
+        
+        const cookieStore = await cookies()
+        const supabase = createClient(cookieStore)
+
+        const imageUrls = []
+  
+        //uploading new base64 images, and keeping old existing url as it is
+        for(let i=0; i<images.length;i++){
+          const imageData = images[i]
+          if(imageData.startsWith("data:image/")){
+            //its a new image so upload on db
+            const base64Data = imageData;
+            const base64 = base64Data.split(",")[1]
+            const imageBuffer = Buffer.from(base64, "base64")
+            const mimeMatch = base64Data.match(/data:image\/([a-zA-Z0-9]+);/);
+            const fileExtension = mimeMatch ? mimeMatch[1] : "jpeg"
+
+            //creating unique filename for new uploaded image
+             const fileName = `image-edit-${Date.now()}-${i}.${fileExtension}`;
+            const filePath = `${folderPath}/${fileName}`;
+
+            const { error } = await supabase.storage
+              .from("movie-images")
+              .upload(filePath, imageBuffer, {
+                contentType: `image/${fileExtension}`,
+                upsert: true
+              });
+
+              if(error){
+            console.error("Error uploading images during edit", error);
+            throw new Error("Error uploading image");
+              }
+
+           const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/movie-images/${filePath}`;
+           imageUrls.push(publicUrl);
+          }else if(imageData.startsWith("http")){
+            //existing img url, so keep it
+            imageUrls.push(imageData)
+          }
+        }
+
+        if(!imageUrls[0]){
+          throw new Error("Poster image is required")
+        }
+
+        //finding existing showtime for a movie
+        const existingShowtimes = await db.showtime.findMany({
+         where: {movieId: movieId},
+         select:{id:true}
+        })
+   
+        if(existingShowtimes.length > 0){
+          const showtimeIds = existingShowtimes.map((st)=>st.id)
+            await db.seatPrice.deleteMany({
+        where: {
+          showtimeId: { in: showtimeIds },
+        },
+      });
+
+      // c) Delete all existing showtimes for the movie
+      await db.showtime.deleteMany({
+        where: { movieId: movieId },
+      });
+    }
+
+     //new showtimes creation
+    const newShowtimes = moviesData.showtimes.map((st) => ({
+        time: st.time,
+        theater: st.theater,
+        filling: st.filling,
+        seatPrices: {
+            create: st.seatPrices.map((sp) => ({
+                seatType: sp.seatType,
+                price: parseFloat(sp.price),
+            })),
+        },
+    }));
+
+    await db.movie.update({
+      where: { id: movieId },
+      data: {
+        title: moviesData.title,
+        rating: moviesData.rating,
+        genre: moviesData.genre,
+        language: moviesData.language,
+        duration: moviesData.duration,
+        poster: imageUrls[0], // Poster is always the first image
+        backdrop: imageUrls[1] || null, // Backdrop is the second
+        releaseDate: new Date(moviesData.releaseDate),
+        votes: moviesData.votes,
+        synopsis: moviesData.synopsis,
+        cast: moviesData.cast,
+        director: moviesData.director,
+        // Recreate the new showtimes and nested seat prices
+        showtimes: {
+            create: newShowtimes,
+        },
+      },
+    });
+
+     revalidatePath("/admin/movies");
+    revalidatePath(`/movie/${movieId}`);
+
+    return {
+      success: true,
+      message: `${moviesData.title} movie got updated successfully!`,
+    };
+  } 
+    catch (error) {
+    console.error("Failed to edit movie", error.message);
+    return { success: false, message: "Failed to edit movie" };
+  }
+};
+
+
 //delete api
 export const deleteMovies = async(movieId)=>{
  try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      throw new Error("Unauthorized: User not logged in.");
-    }
-    //Re-check admin status if necessary, similar to addMovies
-    const loggedInUser = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
-    if (!loggedInUser) throw new Error("User does not exist.");
-
+     await checkAdminAuth()
     await db.$transaction(async(prisma)=>{
       // 1. Get all showtimes and their IDs for the movie being deleted
       const showtimes = await prisma.showtime.findMany({
@@ -208,7 +302,7 @@ export const deleteMovies = async(movieId)=>{
       message: "Movie and all related data deleted successfully!",
     };
   } catch (error) {
-    console.log("Error deleting movie details",error)
+    console.log("Error deleting movie details",error.message)
     return { success: false, message: "Failed to delete movie" };
   }
 }

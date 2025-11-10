@@ -28,34 +28,34 @@ function BookingCard({ booking }) {
   // Format the total price string to show currency
   const formattedTotal = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
   }).format(Number(booking.totalPrice)); // Convert the price string back to a number for formatting
 
   return (
-    <div className="flex flex-col md:flex-row bg-white rounded-xl shadow-md overflow-hidden transition duration-300 hover:shadow-2xl border border-gray-100">
+    <div className="flex flex-col md:flex-row group bg-white rounded-4xl shadow-md overflow-hidden transition duration-300 hover:shadow-lg border border-[gray">
       
       {/* Movie Poster Section */}
-      <div className="md:w-1/4 w-full h-64 md:h-auto bg-gray-200 shrink-0">
+      <div className="md:w-1/4 w-full h-80 bg-gray-200 shrink-0">
         <img
           src={movie.poster || '/placeholder-poster.jpg'} // Use a placeholder if poster is missing
           alt={movie.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-400"
         />
       </div>
 
       {/* Booking Details Section */}
-      <div className="p-6 md:p-8 grow">
-        <div className="flex justify-between items-start mb-4">
+      <div className="p-5 md:p-8 grow">
+        <div className="flex justify-between gap-4 items-start mb-4">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1 text-gray-900">
               {movie.title}
             </h2>
-            <p className="text-sm font-medium text-indigo-600 mt-1">
-              Booked on: **{bookingDate}**
+            <p className="text-sm opacity-65 ">
+              Date: <span className='text-rose-500 font-bold'>{bookingDate}</span>
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-xl font-extrabold text-green-600">
+          <div className="text-right pt-2 md:pt-0">
+            <p className="text-md sm:text-xl font-extrabold text-green-600">
               {formattedTotal}
             </p>
             <span className="text-xs text-gray-500">Total Paid</span>
@@ -89,11 +89,11 @@ function BookingCard({ booking }) {
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
             🎟️ Your Seats ({booking.seats.length})
           </h3>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {booking.seats.map((seat, index) => (
               <span
                 key={index}
-                className={`px-3 py-1 text-sm font-medium rounded-full ${
+                className={`px-3 py-1 text-xs sm:text-md font-medium rounded-full ${
                   seat.type.toLowerCase() === 'vip' 
                     ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' 
                     : 'bg-indigo-100 text-indigo-800 border border-indigo-300'
@@ -103,16 +103,6 @@ function BookingCard({ booking }) {
               </span>
             ))}
           </div>
-        </div>
-
-        {/* Action Button */}
-        <div className="mt-6 text-right">
-          <button 
-            onClick={() => toast.info(`Viewing ticket ${booking.id}`)}
-            className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150"
-          >
-            View E-Ticket
-          </button>
         </div>
       </div>
     </div>
@@ -198,9 +188,9 @@ const BookingPage = () => {
     
     // --- Success State: Render the list of tickets ---
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-8 border-b-4 pb-2">
-                🍿 My Bookings ({tickets.length})
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-5 md:mb-8">
+                🍿 My Bookings
             </h1>
 
             <div className="space-y-8">

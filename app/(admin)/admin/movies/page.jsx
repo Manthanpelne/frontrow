@@ -7,7 +7,7 @@ export const metadata = {
 }
 const MoviesPage = ()=>{
  return (
-    <div className="p-6">
+    <div className="px-4 md:px-12">
         <MoviesList/>
     </div>
  )

@@ -12,7 +12,7 @@ import {
 import { Filter, Loader2, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 let limit = 8;
@@ -25,9 +25,21 @@ const MoviePage = () => {
   const [languages, setLanguages] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [isLoadingId, setIsLoadingId] = useState(null);
+    const [isPending, startTransition] = useTransition();
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+
+  const handleMovieClick = (movieId) => {
+        setIsLoadingId(movieId); // Set the ID of the movie being loaded
+        startTransition(() => {
+            router.push(`/movies/${movieId}`);
+        });
+    };
+
 
   const languageFilterFromUrl = searchParams.get("language") || "";
   const currentPageFromUrl = parseInt(searchParams.get("page")) || 1;
@@ -141,7 +153,7 @@ const MoviePage = () => {
 };
 
   return (
-    <section className="max-w-screen-2xl mx-auto px-4 sm:px-12">
+    <section className="max-w-screen-2xl min-h-screen mx-auto px-4 sm:px-12">
       <h1 className="text-2xl md:text-4xl font-extrabold pt-5 mb-6">Browse Movies Shows</h1>
 
       {/* search & filter */}
@@ -173,7 +185,7 @@ const MoviePage = () => {
               type="search"
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search movies, shows, concerts, standups, etc..."
-              className="pl-9 w-full placeholder:text-xs placeholder:text-gray-400"
+              className="pl-9 w-full placeholder:text-xs md:placeholder:text-sm placeholder:text-gray-400"
             />
           </div>
         </form>
@@ -189,18 +201,23 @@ const MoviePage = () => {
         ) : (
           <>
             {movies.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {movies.map((movie) => (
-                  <Link href={`/movies/${movie.id}`} key={movie.id}>
                     <div
-                      key={movie.title}
-                      className="bg-white rounded-lg shadow-lg transform hover:scale-[1.02] transition duration-300 cursor-pointer"
+                      key={movie.id}
+                      onClick={() => handleMovieClick(movie.id)}
+                      className="bg-white relative rounded-lg shadow-lg transform hover:scale-[1.02] transition duration-300 cursor-pointer"
                     >
-                      <div className="h-[300px] p-4 overflow-hidden">
+                      <div
+                // Use opacity/pointer-events to visually indicate loading and prevent double-clicks
+                className={`${isPending && isLoadingId === movie.id ? 'opacity-50 pointer-events-none' : ''}`}
+            >
+              
+                      <div className="h-[350px] p-3 overflow-hidden">
                       <img
                         src={movie.poster}
                         alt={movie.title}
-                        className="rounded-lg drop-shadow-xl"
+                        className="w-full h-full rounded-lg object-cover drop-shadow-xl"
                       />
                       </div>
                       <div className="p-3">
@@ -223,7 +240,12 @@ const MoviePage = () => {
                         </button>
                       </div>
                     </div>
-                  </Link>
+                    {isPending && isLoadingId===movie.id && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <Loader2 className="h-10 w-10 animate-spin text-black" />
+                </div>
+            )}
+                 </div>
                 ))}
               </div>
             ) : (
@@ -240,7 +262,7 @@ const MoviePage = () => {
                 onClick={()=>handlePageChange(currentPageFromUrl - 1)}
                 disabled={currentPageFromUrl === 1}
                 className="px-4 py-2 text-sm font-semibold rounded-lg border transition-colors duration-200 
-                   disabled:opacity-50 disabled:cursor-not-allowed bg-black/90 text-[#ECF86E] 
+                   disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed bg-black/90 text-[#ECF86E] 
                    hover:bg-black"
                 >
                   Previous
@@ -254,7 +276,7 @@ const MoviePage = () => {
                   className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-colors duration-200 
                       ${currentPageFromUrl === pageNumber
                           ? "bg-[#ECF86E] text-black border-black/90" // Active page style
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100" // Inactive page style
+                          : "bg-white cursor-pointer text-gray-700 border-gray-300 hover:bg-gray-100" // Inactive page style
                       }`}
               >
                   {pageNumber}
@@ -266,7 +288,7 @@ const MoviePage = () => {
                   onClick={() => handlePageChange(currentPageFromUrl + 1)}
                   disabled={currentPageFromUrl === totalPages}
                   className="px-4 py-2 text-sm font-semibold rounded-lg border transition-colors duration-200 
-                            disabled:opacity-50 disabled:cursor-not-allowed bg-black/90 text-[#ECF86E] 
+                            disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed bg-black/90 text-[#ECF86E] 
                             hover:bg-black"
               >
                   Next

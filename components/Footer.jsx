@@ -2,16 +2,30 @@
 
 import React from 'react';
 import { Twitter, Instagram, Linkedin } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils'; // Assuming you have a utility function for combining classes
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  
+  // 💡 Check if the current path includes "/admin"
+  const isAdminPath = pathname.includes("/admin");
+
+  // 💡 Conditional class to hide the footer on small screens if it's an admin path
+  const visibilityClass = isAdminPath ? 'hidden md:block' : 'block';
 
   return (
-    <footer className="relative z-10 max-w-screen-2xl mx-auto  bg-black text-white pt-10 pb-6 mt-20 border-t border-gray-700">
+    <footer 
+      className={
+        `relative  bg-black text-white pt-10 pb-6 mt-20 border-t border-gray-700",
+        ${visibilityClass} // Apply the conditional visibility class
+      `}
+    >
       <div className="px-4 sm:px-6 lg:px-12">
         
         {/* Main Content Row: Logo/Brand and Links */}
-        <div className="flex items-center justify-between  gap-8 mb-8 border-b border-gray-700 pb-8">
+        <div className="flex items-center justify-between gap-8 mb-8 border-b border-gray-700 pb-8">
           
           {/* Column 1: Brand Info */}
           <div className="col-span-2 md:col-span-1">
@@ -22,7 +36,6 @@ const Footer = () => {
               Your gateway to premium cinema experiences. Book your favorite seat now!
             </p>
           </div>
-
 
           {/* Column 4: Social Media Icons */}
           <div className="col-span-2 md:col-span-1">
