@@ -14,7 +14,7 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
      const router = useRouter(); 
      const pathname = usePathname()
 
-     console.log("isadminpage",isAdminPage)
+     //console.log("isadminpage",isAdminPage)
   
      const [isPending, startTransition] = useTransition();
      
@@ -31,13 +31,13 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
   }
   
     const bookingPath = pathname.includes("/bookings");
-console.log("bookingpath",bookingPath)
+//console.log("bookingpath",bookingPath)
   // 💡 Conditional class to hide the footer on small screens if it's an admin path
   const visibilityClass = bookingPath ? 'hidden' : 'block';
 
 
   return (
-<header className="fixed top-6 w-[90%] md:w-[50%] left-1/2 -translate-x-1/2 rounded-2xl bg-[gray]/10 backdrop-blur-sm z-50">
+<header className="fixed top-6 w-[90%] md:w-[50%] left-1/2 -translate-x-1/2 rounded-2xl bg-[gray]/5 border border-[#938d8d] backdrop-blur-sm z-50">
       <nav className="mx-auto px-2 py-2 sm:py-4 sm:px-4 flex gap-2 sm:gap-5 items-center justify-between">
         <a href='/' className='font-extrabold uppercase text-xs sm:text-sm rounded-sm border-2 border-[white] bg-[#ECF86E] text-black p-2'>FrontRow</a>
         

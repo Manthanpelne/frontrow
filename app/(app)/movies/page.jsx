@@ -82,7 +82,7 @@ const MoviePage = () => {
       try {
         const result = await getMoviesFilter();
         if (result.success) {
-          console.log("lang", result.data.languages);
+          //console.log("lang", result.data.languages);
           setLanguages(result.data.languages);
         }
       } catch (error) {
@@ -107,7 +107,7 @@ const MoviePage = () => {
         limit
       );
       if (result?.success) {
-        console.log("movies", result.movies);
+        //console.log("movies", result.movies);
         setMovies(result.movies);
         //console.log("movies",result.movies)
         setTotalPages(result.totalPages);

@@ -343,7 +343,7 @@ const TicketBookingPage = ({
 
   return (
     <div className="w-full min-h-screen bg-gray-50 p-4 font-sans">
-      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl p-6 md:p-10 border border-gray-100">
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-10 border border-gray-100">
         {/* Title */}
         <div className="text-center">
           <h1 className="text-3xl lg:text-4xl font-extrabold text-[#7e6177] drop-shadow-2xl mb-2 ">
