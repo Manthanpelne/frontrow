@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -205,12 +206,12 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-gray-900">
               🎬 The Buzz: Trending Now
             </h2>
-            <a
+            <Link
               href="/movies/"
               className="text-[#5A5C3E] font-medium hover:text-red-700 transition"
             >
               View All Movies →
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -221,9 +222,11 @@ export default function Home() {
                 key={movie.title}
                 className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.02] transition duration-300 cursor-pointer"
               >
-                 <img
+                 <Image
                 src={movie.imageUrl}
                 alt={movie.title}
+                width={100}
+                height={100}
                 className="w-full h-[300px] object-cover"
             />
             {/* 2. OPTIONAL: Show a small loading overlay if desired, but image is usually better */}
@@ -268,8 +271,10 @@ export default function Home() {
                 key={event.title}
                 className="relative bg-white rounded-xl shadow-xl overflow-hidden group cursor-pointer h-0 pb-[56.25%] sm:pb-[56.25%]"
               >
-                <img
+                <Image
                   src={event.imageUrl}
+                   width={100}
+                   height={100}
                   alt={event.title}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

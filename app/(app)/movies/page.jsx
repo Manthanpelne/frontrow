@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Filter, Loader2, Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
@@ -214,9 +215,11 @@ const MoviePage = () => {
             >
               
                       <div className="h-[350px] p-3 overflow-hidden">
-                      <img
+                      <Image
                         src={movie.poster}
                         alt={movie.title}
+                        width={100}
+                        height={100}
                         className="w-full h-full rounded-lg object-cover drop-shadow-xl"
                       />
                       </div>

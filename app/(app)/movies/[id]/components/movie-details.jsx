@@ -1,4 +1,5 @@
 import { Star, Calendar, Clock, User, Users, Tag, Globe, Ticket, Theater, VectorSquareIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const MovieDetailsPage = ({ movie }) => {
@@ -20,9 +21,11 @@ const MovieDetailsPage = ({ movie }) => {
       <div className="flex flex-col md:flex-row gap-8 text-white">
         {/* Poster Image (Visible only on smaller screens) */}
         <div className="md:hidden sm:mt-8">
-          <img
+          <Image
             src={movie?.poster}
             alt={movie?.title}
+            width={100}
+            height={100}
             className="w-full h-auto object-cover rounded-2xl shadow-xl"
           />
         </div>
