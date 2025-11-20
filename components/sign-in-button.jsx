@@ -40,9 +40,16 @@ export default function SignIn({initialSession}) {
           // Pass the imported Server Action directly to the `action` prop
           action={signInAction}
         >
+           <Tooltip>
+      <TooltipTrigger asChild>
           <Button className="border-2 border-[#6d6e63] cursor-pointer" type="submit">
-            Sign In <User2 className=""/>
+             <span className="hidden sm:block">Sign In</span> <User2 className=""/>
           </Button>
+            </TooltipTrigger>
+      <TooltipContent>
+        <p>Sign In</p>
+      </TooltipContent>
+    </Tooltip>
         </form>
       </div>
     </>

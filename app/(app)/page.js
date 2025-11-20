@@ -148,7 +148,7 @@ export default function Home() {
         </div>
 
         {/* 4. Text on the image */}
-        <div className="absolute inset-x-0 bottom-24 md:bottom-40 text-center text-white p-4">
+        <div className="absolute inset-x-0 bottom-36 md:bottom-40 text-center text-white p-4">
           <h1 className="text-4xl md:text-5xl font-extrabold text-[#ECF86E]">
             The Front Row Experience
           </h1>
@@ -214,7 +214,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 md:gap-3">
             {trendingMovies.map((movie) => (
               <div
                 onClick={handleRouteClick}

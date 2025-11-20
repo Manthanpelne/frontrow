@@ -2,6 +2,7 @@
 "use client"
 
 import { getUsersBookingsAction } from '@/actions/ticket-booking'
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner' // Assuming 'sonner' is installed for toasts
 
@@ -162,9 +163,13 @@ const BookingPage = () => {
     
     if (error) {
         return (
-            <div className="text-center py-20 bg-red-50 border border-red-200 rounded-lg max-w-xl mx-auto">
-                <h2 className="text-xl font-semibold text-red-700">Error!</h2>
-                <p className="text-red-500 mt-2">{error}</p>
+            <div className="text-center py-2 rounded-lg max-w-md mx-auto ">
+               <Image
+               src="/404.png"
+               width={100}
+               height={100}
+               className='opacity-40 m-auto w-full'
+               />
             </div>
         );
     }

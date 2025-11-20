@@ -37,7 +37,7 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
 
 
   return (
-<header className="fixed top-6 w-[90%] md:w-[50%] left-1/2 -translate-x-1/2 rounded-2xl bg-[gray]/5 border border-[#938d8d] backdrop-blur-sm z-50">
+<header className="fixed top-6 w-[95%] md:w-[50%] left-1/2 -translate-x-1/2 rounded-2xl bg-[gray]/5 border border-[#938d8d] backdrop-blur-sm z-50">
       <nav className="mx-auto px-2 py-2 sm:py-4 sm:px-4 flex gap-2 sm:gap-5 items-center justify-between">
         <a href='/' className='font-extrabold uppercase text-xs sm:text-sm rounded-sm border-2 border-[white] bg-[#ECF86E] text-black p-2'>FrontRow</a>
         
@@ -59,7 +59,7 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
               {/* My Bookings Link (Non-Admin User) */}
                {!isAdmin  && (
                 <Button 
-                  className={`${visibilityClass}  hover:bg-[#414140] shadow-md hover:shadow-xl transition-all duration-300 min-w-28 py-0 items-center cursor-pointer border-2 border-[#6d6e63] gap-2}`}
+                  className={`${visibilityClass}  hover:bg-[#414140] shadow-md hover:shadow-xl transition-all duration-300 min-w-26 py-0 items-center cursor-pointer border-2 border-[#6d6e63] gap-2}`}
                   onClick={handleBookingClick}
                   disabled={isPending} 
                 >
@@ -71,7 +71,7 @@ const Header = ({isAdminPage = false, initialIsAdmin, initialSession}) => {
                       </svg>
                   
                   ) : (
-                    <span className="inline text-xs sm:text-sm">My Bookings</span>
+                    <span className="inline text-sm">My Bookings</span>
                   )}
                 </Button>
                )}
