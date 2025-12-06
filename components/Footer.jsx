@@ -57,7 +57,7 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="text-center md:flex md:justify-between md:items-center">
           <p className="text-sm text-[gray]">
-            &copy; {currentYear} FrontRow Ticketing. All rights reserved.
+            &copy; {currentYear} FrontRow Ticketing System. All rights reserved.
           </p>
           <div className="mt-3 md:mt-0">
             <a href="/terms" className="text-xs text-gray-500 hover:text-yellow-300 transition duration-150">Terms of Service</a>
